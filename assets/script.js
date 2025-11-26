@@ -1,31 +1,60 @@
 const username = "LudGar"; // your GitHub username
 const repoList = document.getElementById("repo-list");
 
-fetch(`https://api.github.com/users/${username}/repos?sort=updated`)
-  .then(resp => resp.json())
+function formatDate(isoString) {
+  if (!isoString) return "";
+  const d = new Date(isoString);
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`)
+  .then(resp => {
+    if (!resp.ok) {
+      throw new Error(`GitHub API error: ${resp.status}`);
+    }
+    return resp.json();
+  })
   .then(repos => {
     repoList.innerHTML = ""; // clear loading text
 
-    repos.forEach(repo => {
-      // Skip forks and private repos automatically
-      if (repo.fork) return;
+    // Filter out forks and archived if you like
+    const visibleRepos = repos.filter(repo => !repo.fork);
 
+    if (!visibleRepos.length) {
+      repoList.innerHTML = "<div class='loading'>No public repositories found.</div>";
+      return;
+    }
+
+    visibleRepos.forEach(repo => {
       const card = document.createElement("div");
       card.className = "repo-card";
 
+      const primaryLink = repo.homepage && repo.homepage.trim().length
+        ? repo.homepage
+        : repo.html_url;
+
       card.innerHTML = `
-        <a href="${repo.homepage || repo.html_url}" class="repo-link" target="_blank">
+        <a href="${primaryLink}" class="repo-link" target="_blank" rel="noopener noreferrer">
           <h2 class="repo-name">${repo.name}</h2>
         </a>
         <p class="repo-description">
           ${repo.description || "No description provided."}
         </p>
+        <div class="repo-meta">
+          ${repo.language ? `<span class="repo-tag">Lang: ${repo.language}</span>` : ""}
+          <span class="repo-tag">★ ${repo.stargazers_count}</span>
+          <span class="repo-tag">Updated: ${formatDate(repo.updated_at)}</span>
+        </div>
       `;
 
       repoList.appendChild(card);
     });
   })
   .catch(err => {
-    repoList.innerHTML = "<div class='loading'>Failed to load repositories.</div>";
     console.error(err);
+    repoList.innerHTML = "<div class='loading'>Failed to load repositories from GitHub.</div>";
   });
