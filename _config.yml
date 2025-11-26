@@ -1,0 +1,6 @@
+title: "LudGar Cyberpunk Hub"
+description: "A neon landing page for all my GitHub repos."
+theme: jekyll-theme-minimal
+
+# Disable the default theme styling—we override with CSS
+markdown: kramdown
