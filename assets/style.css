@@ -1,76 +1,240 @@
 :root {
-  --bg: #05070a;
-  --card-bg: #0d1117;
+  --bg: #020309;
+  --card-bg: #050913;
   --neon: #00eaff;
+  --neon-soft: rgba(0, 234, 255, 0.25);
   --text: #e6f7ff;
   --text-dim: #8abfcf;
-  --font: 'Segoe UI', Roboto, sans-serif;
+  --font: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 body {
-  background: var(--bg);
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #06121f 0%, var(--bg) 55%, #000000 100%);
   color: var(--text);
   font-family: var(--font);
-  margin: 0;
-  padding: 40px;
+  overflow-x: hidden;
 }
 
+/* === Moving neon grid background === */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(0, 234, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 234, 255, 0.12) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.32;
+  animation: grid-drift 25s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 0 60px, 60px 0;
+  }
+}
+
+/* Subtle scanline overlay for cyberpunk CRT-ish feel */
+.scanline-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04),
+    rgba(0, 0, 0, 0.2)
+  );
+  background-size: 100% 3px;
+  mix-blend-mode: soft-light;
+  opacity: 0.4;
+}
+
+/* === Layout === */
 .container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
 }
 
+/* === Title / Subtitle === */
 .neon-title {
-  font-size: 3rem;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
   text-align: center;
   color: var(--neon);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 8px;
   text-shadow:
-      0 0 5px var(--neon),
-      0 0 15px var(--neon),
-      0 0 30px var(--neon);
-  margin-bottom: 10px;
-  font-weight: 600;
+    0 0 4px var(--neon),
+    0 0 10px var(--neon),
+    0 0 26px rgba(0, 234, 255, 0.9);
+  animation: title-glow 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes title-glow {
+  0% {
+    text-shadow:
+      0 0 4px var(--neon),
+      0 0 10px var(--neon),
+      0 0 26px rgba(0, 234, 255, 0.9);
+  }
+  100% {
+    text-shadow:
+      0 0 8px var(--neon),
+      0 0 20px var(--neon),
+      0 0 45px rgba(0, 234, 255, 1);
+  }
 }
 
 .subtitle {
   text-align: center;
   color: var(--text-dim);
-  margin-bottom: 40px;
+  margin: 0 0 35px;
+  font-size: 0.95rem;
 }
 
+/* === Repo list layout === */
 .repo-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
+/* === Animated neon border / card === */
 .repo-card {
-  background: var(--card-bg);
+  position: relative;
+  background: linear-gradient(135deg, #050913, #050913 55%, #081626);
+  border-radius: 12px;
+  padding: 18px 18px 16px;
+  overflow: hidden;
   border: 1px solid rgba(0, 234, 255, 0.2);
-  padding: 20px;
-  border-radius: 10px;
-  transition: 0.2s;
+  transition:
+    transform 0.16s ease-out,
+    box-shadow 0.16s ease-out,
+    border-color 0.16s ease-out,
+    background 0.16s ease-out;
+}
+
+/* Moving neon border glow ring */
+.repo-card::before {
+  content: "";
+  position: absolute;
+  inset: -140%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--neon) 90deg,
+    transparent 180deg,
+    var(--neon) 270deg,
+    transparent 360deg
+  );
+  opacity: 0.75;
+  animation: neon-ring 6s linear infinite;
+  z-index: -2;
+}
+
+/* Mask to keep glow only at border area */
+.repo-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: inherit;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+@keyframes neon-ring {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .repo-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 8px rgba(0, 234, 255, 0.4),
+    0 0 26px rgba(0, 234, 255, 0.25);
   border-color: var(--neon);
-  box-shadow: 0 0 10px rgba(0, 234, 255, 0.4);
 }
 
+/* === Repo text === */
 .repo-name {
-  font-size: 1.4rem;
-  margin: 0;
+  font-size: 1.1rem;
+  margin: 0 0 6px;
   color: var(--neon);
+}
+
+.repo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.repo-link:focus-visible {
+  outline: 2px solid var(--neon);
+  outline-offset: 3px;
 }
 
 .repo-description {
   color: var(--text-dim);
-  margin-top: 6px;
+  margin: 0 0 4px;
+  font-size: 0.9rem;
 }
 
+.repo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.repo-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--neon-soft);
+  background: radial-gradient(circle at top, rgba(0, 234, 255, 0.15), transparent);
+}
+
+/* === Loading / error === */
 .loading {
   text-align: center;
   color: var(--text-dim);
-  font-size: 1.2rem;
+  font-size: 0.95rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  body {
+    padding: 0;
+  }
+
+  .container {
+    padding: 24px 16px 40px;
+  }
 }
