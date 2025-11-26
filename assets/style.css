@@ -1,0 +1,76 @@
+:root {
+  --bg: #05070a;
+  --card-bg: #0d1117;
+  --neon: #00eaff;
+  --text: #e6f7ff;
+  --text-dim: #8abfcf;
+  --font: 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  margin: 0;
+  padding: 40px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.neon-title {
+  font-size: 3rem;
+  text-align: center;
+  color: var(--neon);
+  text-shadow:
+      0 0 5px var(--neon),
+      0 0 15px var(--neon),
+      0 0 30px var(--neon);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-dim);
+  margin-bottom: 40px;
+}
+
+.repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.repo-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0, 234, 255, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  transition: 0.2s;
+}
+
+.repo-card:hover {
+  border-color: var(--neon);
+  box-shadow: 0 0 10px rgba(0, 234, 255, 0.4);
+}
+
+.repo-name {
+  font-size: 1.4rem;
+  margin: 0;
+  color: var(--neon);
+}
+
+.repo-description {
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.loading {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+}
